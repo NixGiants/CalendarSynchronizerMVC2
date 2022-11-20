@@ -10,6 +10,10 @@ namespace DAL
 {
     public class ApplicationDbContext:DbContext
     {
-        public List<Schedule> Schedules { get; set; }
+        public ApplicationDbContext(DbContextOptions options):base(options)
+        {
+            Database.EnsureCreated();
+        }
+        public DbSet<Schedule> Schedules { get; set; }
     }
 }
