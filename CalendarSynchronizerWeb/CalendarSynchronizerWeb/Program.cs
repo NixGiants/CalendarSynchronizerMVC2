@@ -1,3 +1,6 @@
+using BLL.Intrfaces;
+using BLL.Services;
+using CalendarSynchronizerWeb.Models;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,8 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//builder.Services.ConfigureWritable<GoogleAuthCreds>(builder.Configuration.GetSection("GoogleAuthCreds"));
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddSession();
+//builder.Services.AddScoped<IConfigurationManagerService<GoogleAuthCreds>, ConfigurationManagerService<GoogleAuthCreds>>();
+builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 
 var app = builder.Build();
 
@@ -18,6 +24,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
