@@ -13,7 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddSession();
 //builder.Services.AddScoped<IConfigurationManagerService<GoogleAuthCreds>, ConfigurationManagerService<GoogleAuthCreds>>();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
-
+builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
