@@ -15,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
         options.UseSqlServer(
             builder.Configuration.GetConnectionString("DefaultConnection"),
-            x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
+            x => x.MigrationsAssembly("DAL")));
 builder.Services.AddSession();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
