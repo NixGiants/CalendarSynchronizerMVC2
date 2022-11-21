@@ -1,26 +1,29 @@
 ﻿using BLL.Intrfaces;
 using BLL.Services;
+using CalendarSynchronizerWeb.Managers.Interfaces;
 using CalendarSynchronizerWeb.Models;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Protocols;
 
 namespace CalendarSynchronizerWeb.Controllers
 {
     public class GoogleAuthController : Controller
     {
-        //private readonly IConfigurationManagerService<GoogleAuthCreds> configurationManager;
+        private readonly IConfigurationManager<GoogleAuthCreds> configurationManager;
         private readonly ISha256HelperService sha256HelperService;
         private readonly IGoogleOAuthService googleOAuthService;
 
-        public GoogleAuthController(ISha256HelperService sha256HelperService, IGoogleOAuthService googleOAuthService)
+        public GoogleAuthController(ISha256HelperService sha256HelperService, IGoogleOAuthService googleOAuthService, IConfigurationManager<GoogleAuthCreds> configurationManager)
         {
             this.sha256HelperService = sha256HelperService;
             this.googleOAuthService = googleOAuthService;
+            this.configurationManager = configurationManager;
         }
 
         private const string RedirectUrl = "https://localhost:7060/GoogleAuth/Code";
-        private const string CalendarScope = "https://www.googleapis.com/auth/calendar.readonly";
+        //private const string CalendarScope = "https://www.googleapis.com/auth/calendar.readonly";
+        private const string CalendarScope = "https://www.googleapis.com/auth/calendar";
         private const string PkceSessionKey = "codeVerifier";   
 
         public IActionResult RedirectOnOAuthServer()
@@ -43,14 +46,12 @@ namespace CalendarSynchronizerWeb.Controllers
 
                 var tokenResult = await googleOAuthService.ExchangeCodeOnTokenAsync(code, codeVerifier, RedirectUrl);
 
-                //configurationManager.ChangeAppSettingValue(opt =>
-                //{
-                //    opt.RefreshToken = tokenResult.RefreshToken;
-                //    opt.AccessToken = tokenResult.AccessToken;
-                //});
+                configurationManager.ChangeAppSettingValue(opt =>
+                {
+                    opt.RefreshToken = tokenResult.RefreshToken;
+                    opt.AccessToken = tokenResult.AccessToken;
+                });
                 return RedirectToAction("Privacy", "Home");
-
-               // return RedirectToAction("IncrementalSync", "GoogleCalendar");
 
             }
             catch (Exception ex)
@@ -59,7 +60,6 @@ namespace CalendarSynchronizerWeb.Controllers
                 //TODO Error hadling logic
             }
         }
-
 
             public IActionResult Index()
         {
