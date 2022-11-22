@@ -1,10 +1,7 @@
 ﻿using BLL.Intrfaces;
-using BLL.Services;
 using CalendarSynchronizerWeb.Managers.Interfaces;
-using CalendarSynchronizerWeb.Models;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace CalendarSynchronizerWeb.Controllers
 {

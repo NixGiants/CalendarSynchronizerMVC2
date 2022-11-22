@@ -1,11 +1,7 @@
 ﻿using BLL.Intrfaces;
 using IdentityModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {

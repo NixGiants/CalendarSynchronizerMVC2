@@ -1,5 +1,4 @@
-﻿using BLL.Intrfaces;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using CalendarSynchronizerWeb.Managers.Interfaces;
