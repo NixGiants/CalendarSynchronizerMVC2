@@ -15,10 +15,12 @@ namespace CalendarSynchronizerWeb.Controllers
             _context = context;
         }
 
-        
         public IActionResult Index()
         {
             return View();
         }
+
+
+
     }
 }
