@@ -38,6 +38,31 @@ namespace CalendarSynchronizerWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(loginViewModel.UserName, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
+                
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                if (result.IsLockedOut)
+                {
+                    return View("LockOut");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                    return View(loginViewModel);
+                }
+            }
+            return View(loginViewModel);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string? returnUrl = null)
         {
             registerViewModel.ReturnUrl = returnUrl;
@@ -60,5 +85,13 @@ namespace CalendarSynchronizerWeb.Controllers
             }
             return View(registerViewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogOff()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Inex", "Home");
+        } 
     }
 }
