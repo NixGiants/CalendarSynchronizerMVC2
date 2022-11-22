@@ -1,4 +1,5 @@
-﻿using CalendarSynchronizerWeb.ViewModels;
+﻿using CalendarSynchronizerWeb.Services.Interfaces;
+using CalendarSynchronizerWeb.ViewModels;
 using Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,13 @@ namespace CalendarSynchronizerWeb.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly ISendGridEmailService sendGridEmail;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ISendGridEmailService sendGridEmail)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.sendGridEmail = sendGridEmail;
         }
 
         public IActionResult Index()
@@ -26,6 +29,34 @@ namespace CalendarSynchronizerWeb.Controllers
             RegisterViewModel registerViewModel = new RegisterViewModel();
             registerViewModel.ReturnUrl = returnUrl;
             return View(registerViewModel);
+        }
+
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(forgotPasswordViewModel.Email);
+
+                if (user == null)
+                {
+                    return RedirectToAction("ForgotPasswordConfirmation");
+                }
+
+                var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                var callBackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code = code}, protocol:HttpContext.Request.Scheme);
+
+                await sendGridEmail.SendEmailAsync(forgotPasswordViewModel.Email, "Reset Email Confirmation", "Please reset email by going to this link" +
+                    "<a href = \"" + callBackUrl + "\" >link</a>");
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+            return View(forgotPasswordViewModel);
         }
 
         [HttpGet]
@@ -73,7 +104,7 @@ namespace CalendarSynchronizerWeb.Controllers
                 {
                     UserName = registerViewModel.UserName,
                     Email = registerViewModel.Email,
-
+                    EmailConfirmed = true
                 };
                 var result = await userManager.CreateAsync(user, registerViewModel.Password);
                 if (result.Succeeded)
@@ -86,12 +117,18 @@ namespace CalendarSynchronizerWeb.Controllers
             return View(registerViewModel);
         }
 
+        [HttpGet]
+        public IActionResult ForgotpasswordConfirmation()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Inex", "Home");
+            return RedirectToAction("Login", "Account");
         } 
     }
 }
