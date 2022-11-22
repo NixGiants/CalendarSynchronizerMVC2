@@ -1,7 +1,10 @@
 using BLL.Intrfaces;
 using BLL.Services;
 using CalendarSynchronizerWeb.Extensions;
+using CalendarSynchronizerWeb.Helpers;
 using CalendarSynchronizerWeb.Models;
+using CalendarSynchronizerWeb.Services;
+using CalendarSynchronizerWeb.Services.Interfaces;
 using Core.Models;
 using DAL;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +23,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
+
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 4;
@@ -32,7 +37,8 @@ builder.Services.Configure<IdentityOptions>(opt =>
 builder.Services.AddSession();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
-builder.Services.AddScoped<AppUser>();
+builder.Services.AddTransient<ISendGridEmailService, SendGridEmailService>();
+//builder.Services.AddScoped<AppUser>();
 //builder.Services.AddScoped<UserManager<AppUser>>();
 var app = builder.Build();
 
