@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class Schedule
+    public class Schedule : IEntity, IComparable<Schedule>
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -23,6 +19,40 @@ namespace Core.Models
         public string? RecurrenceID { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }
-        public bool IsAllDay { get; set; } = false; 
+        public bool IsAllDay { get; set; } = false;
+
+        public int CompareTo(Schedule other)
+        {
+
+            if (Status.CompareTo(other.Status) != 0)
+            {
+                return Status.CompareTo(other.Status);
+            }
+            else if (ExternalId.CompareTo(other.ExternalId) != 0)
+            {
+                return ExternalId.CompareTo(other.ExternalId);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public void UpdateEntity(Schedule scheduleFromServer)
+        {
+            Subject = scheduleFromServer.Subject;
+            Description = scheduleFromServer.Description;
+            StartTime = scheduleFromServer.StartTime;
+            EndTime = scheduleFromServer.EndTime;
+            StartTimezone = scheduleFromServer.StartTimezone;
+            EndTimezone = scheduleFromServer.EndTimezone;
+            ExternalId = scheduleFromServer.ExternalId;
+            Location = scheduleFromServer.Location;
+            RecurrenceID = scheduleFromServer.RecurrenceID;
+            RecurrenceRule = scheduleFromServer.RecurrenceRule;
+            RecurrenceException = scheduleFromServer.RecurrenceException;
+            IsAllDay = scheduleFromServer.IsAllDay;
+        }
     }
 }
+
