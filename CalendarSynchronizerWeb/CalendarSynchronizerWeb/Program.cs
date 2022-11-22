@@ -4,6 +4,7 @@ using CalendarSynchronizerWeb.Extensions;
 using CalendarSynchronizerWeb.Models;
 using Core.Models;
 using DAL;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
         options.UseSqlServer(
             builder.Configuration.GetConnectionString("DefaultConnection"),
-            x => x.MigrationsAssembly("DAL")));
+            x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddSession();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
