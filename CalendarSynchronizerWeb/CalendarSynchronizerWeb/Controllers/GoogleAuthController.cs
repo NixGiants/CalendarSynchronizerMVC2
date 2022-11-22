@@ -51,7 +51,7 @@ namespace CalendarSynchronizerWeb.Controllers
                     opt.RefreshToken = tokenResult.RefreshToken;
                     opt.AccessToken = tokenResult.AccessToken;
                 });
-                return RedirectToAction("Privacy", "Home");
+                return RedirectToAction("Index", "GoogleCalendar");
 
             }
             catch (Exception ex)
