@@ -11,6 +11,10 @@ namespace DAL
         {
             Database.EnsureCreated();
         }
+        public DbSet<AppUser> users { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
+
+        public DbSet<Calendar> Calendars { get; set; }
+
     }
 }
