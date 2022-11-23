@@ -9,5 +9,6 @@ namespace Core.Models
 {
     public class AppUser:IdentityUser
     {
+        public List<Calendar> Calendars { get; set; }
     }
 }
