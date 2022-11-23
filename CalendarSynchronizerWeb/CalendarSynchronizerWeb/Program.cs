@@ -1,9 +1,13 @@
 using BLL.Intrfaces;
 using BLL.Services;
 using CalendarSynchronizerWeb.Extensions;
+using CalendarSynchronizerWeb.Helpers;
 using CalendarSynchronizerWeb.Models;
+using CalendarSynchronizerWeb.Services;
+using CalendarSynchronizerWeb.Services.Interfaces;
 using Core.Models;
 using DAL;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +19,27 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
         options.UseSqlServer(
             builder.Configuration.GetConnectionString("DefaultConnection"),
-            x => x.MigrationsAssembly("DAL")));
+            x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
+
+builder.Services.Configure<IdentityOptions>(opt =>
+{
+    opt.Password.RequiredLength = 4;
+    opt.Password.RequireLowercase = true;
+    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
+    opt.Lockout.MaxFailedAccessAttempts = 5;
+    opt.SignIn.RequireConfirmedAccount = true;
+});
+
 builder.Services.AddSession();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
+builder.Services.AddTransient<ISendGridEmailService, SendGridEmailService>();
+//builder.Services.AddScoped<AppUser>();
+//builder.Services.AddScoped<UserManager<AppUser>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
