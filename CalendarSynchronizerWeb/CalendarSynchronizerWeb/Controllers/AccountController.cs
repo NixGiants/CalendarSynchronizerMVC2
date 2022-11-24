@@ -1,8 +1,10 @@
 ﻿using CalendarSynchronizerWeb.Services.Interfaces;
 using CalendarSynchronizerWeb.ViewModels;
 using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CalendarSynchronizerWeb.Controllers
 {
@@ -50,7 +52,7 @@ namespace CalendarSynchronizerWeb.Controllers
                 }
 
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                var callBackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code = code}, protocol:HttpContext.Request.Scheme);
+                var callBackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
                 await sendGridEmail.SendEmailAsync(forgotPasswordViewModel.Email, "Reset Email Confirmation", "Please reset email by going to this link" +
                     "<a href = \"" + callBackUrl + "\" >link</a>");
@@ -62,7 +64,7 @@ namespace CalendarSynchronizerWeb.Controllers
         [HttpGet]
         public IActionResult ResetPassword(string? code = null)
         {
-            return code == null? View("Error") : View();
+            return code == null ? View("Error") : View();
         }
 
         [HttpPost]
@@ -72,7 +74,7 @@ namespace CalendarSynchronizerWeb.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByEmailAsync(resetPassword.Email);
-                if(user == null)
+                if (user == null)
                 {
                     ModelState.AddModelError("Email:", "User Not found");
                     return View();
@@ -84,7 +86,7 @@ namespace CalendarSynchronizerWeb.Controllers
                 }
             }
             return View(resetPassword);
-        } 
+        }
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -101,8 +103,8 @@ namespace CalendarSynchronizerWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(loginViewModel.UserName, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
-                
+                var result = await signInManager.PasswordSignInAsync(loginViewModel.Email, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
@@ -119,6 +121,92 @@ namespace CalendarSynchronizerWeb.Controllers
             }
             return View(loginViewModel);
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
+        {
+            var redirect = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirect);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, "Error from external provider");
+                return View("Login");
+            }
+
+            var info = await signInManager.GetExternalLoginInfoAsync();
+
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+
+            if (result.Succeeded)
+            {
+                await signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                return LocalRedirect(returnUrl);
+            }
+            else
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["ProviderDisplayName"] = info.ProviderDisplayName;
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                ExternalLoginViewModel externalLoginView = new ExternalLoginViewModel
+                {
+                    Email = email
+                };
+                return View("ExternalLoginConfirmation", externalLoginView);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string? returnUrl = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            if (ModelState.IsValid)
+            {
+                var info = await signInManager.GetExternalLoginInfoAsync();
+
+                if (info == null)
+                {
+                    return View("Error");
+                }
+                var user = new AppUser
+                {
+                    UserName = model.Name,
+                    Email = model.Email,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    //await userManager.AddToRoleAsync(user, "User");
+                    result = await userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        await signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+                ModelState.AddModelError("Email", "User already exist");
+            }
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string? returnUrl = null)
@@ -156,6 +244,6 @@ namespace CalendarSynchronizerWeb.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
-        } 
+        }
     }
 }
