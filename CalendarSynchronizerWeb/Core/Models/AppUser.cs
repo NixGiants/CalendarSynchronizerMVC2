@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace Core.Models
 {
@@ -13,14 +13,14 @@ namespace Core.Models
     {
 
         [NotMapped]
-        public string RoleId { get; set; }
+        public string? RoleId { get; set; }
 
         [NotMapped]
-        public string Role { get; set; }
+        public string? Role { get; set; }
 
         [NotMapped]
-        public IEnumerable<SelectListItem> RoleList { get; set; }
+        public IEnumerable<SelectListItem>? RoleList { get; set; }
 
-        public List<Calendar> Calendars { get; set; }
+        public List<Calendar>? Calendars { get; set; }
     }
 }
