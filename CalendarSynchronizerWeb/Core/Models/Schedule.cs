@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
@@ -20,6 +21,9 @@ namespace Core.Models
         public string Description { get; set; }
         public string Location { get; set; }
         public bool IsAllDay { get; set; } = false;
+
+        [ForeignKey("CalendarId")]
+        public string CalendarId { get; set; }
 
         public int CompareTo(Schedule other)
         {

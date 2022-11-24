@@ -11,6 +11,7 @@ namespace Core.Models
 {
     public class AppUser:IdentityUser
     {
+
         [NotMapped]
         public string RoleId { get; set; }
 
@@ -20,5 +21,6 @@ namespace Core.Models
         [NotMapped]
         public IEnumerable<SelectListItem> RoleList { get; set; }
 
+        public List<Calendar> Calendars { get; set; }
     }
 }
