@@ -21,9 +21,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(
             builder.Configuration.GetConnectionString("DefaultConnection"),
             x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddRoles<IdentityRole>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = "516669132332-ril060aftkfjnc8gq5mqurffc3t95n8q.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+    });
 
 builder.Services.Configure<IdentityOptions>(opt =>
 {
@@ -31,7 +36,7 @@ builder.Services.Configure<IdentityOptions>(opt =>
     opt.Password.RequireLowercase = true;
     opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
     opt.Lockout.MaxFailedAccessAttempts = 5;
-    opt.SignIn.RequireConfirmedAccount = true;
+    //opt.SignIn.RequireConfirmedAccount = true;
 });
 
 builder.Services.AddSession();
@@ -57,6 +62,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",

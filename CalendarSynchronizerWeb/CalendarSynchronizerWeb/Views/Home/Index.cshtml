@@ -7,3 +7,12 @@
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     <a href="/GoogleAuth/RedirectOnOAuthServer">Авторизоваться в Гугл</a>
 </div>
+
+@if(User.Identity.IsAuthenticated){
+    @if(User.IsInRole("Admin")){
+        <h3>Your Role Is Admin</h3>
+    }
+    else{
+        <h3>Your role is User</h3>
+    }
+}6
