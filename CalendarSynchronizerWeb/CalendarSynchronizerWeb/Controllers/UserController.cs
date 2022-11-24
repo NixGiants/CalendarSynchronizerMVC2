@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using CalendarSynchronizerWeb.ViewModels;
+using Core.Models;
 using DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -111,6 +112,71 @@ namespace CalendarSynchronizerWeb.Controllers
             dbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ManageClaims(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            var existingUserClaims = await userManager.GetClaimsAsync(user);
+
+            var model = new UserClaimsViewModel()
+            {
+                UserId = userId,
+            };
+
+            foreach(Claim claim in ClaimStore.claimList)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType = claim.Type,
+                };
+
+                if(existingUserClaims.Any(claim => claim.Type == claim.Type))
+                {
+                    userClaim.IsSelected = true;
+                }
+                model.Claims.Add(userClaim);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ManageClaims(UserClaimsViewModel viewModel)
+        {
+            var user = await userManager.FindByIdAsync(viewModel.UserId);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            var claims = await userManager.GetClaimsAsync(user);
+            var result = await userManager.RemoveClaimsAsync(user, claims);
+
+            if (!result.Succeeded)
+            {
+                return View(viewModel);
+            }
+
+            result = await userManager.AddClaimsAsync(user, 
+                viewModel.Claims.Where(cl => cl.IsSelected)
+                .Select(c => new Claim(c.ClaimType, c.IsSelected.ToString())));
+
+            if (!result.Succeeded)
+            {
+                return View(viewModel);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
     }
 }
