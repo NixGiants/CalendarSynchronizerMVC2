@@ -4,6 +4,7 @@ using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace CalendarSynchronizerWeb.Controllers
@@ -12,27 +13,21 @@ namespace CalendarSynchronizerWeb.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly ISendGridEmailService sendGridEmail;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ISendGridEmailService sendGridEmail)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ISendGridEmailService sendGridEmail, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.sendGridEmail = sendGridEmail;
+            this.roleManager = roleManager;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-
-        public async Task<IActionResult> Register(string? returnUrl = null)
-        {
-            RegisterViewModel registerViewModel = new RegisterViewModel();
-            registerViewModel.ReturnUrl = returnUrl;
-            return View(registerViewModel);
-        }
-
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -207,6 +202,33 @@ namespace CalendarSynchronizerWeb.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Register(string? returnUrl = null)
+        {
+            if(!await roleManager.RoleExistsAsync("User"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("User"));
+            }
+            if(!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem(){
+                Value = "User",
+                   Text = "User"
+            });
+            listItems.Add(new SelectListItem()
+            {
+                Value = "Admin",
+                Text = "Admin"
+            });
+
+            RegisterViewModel registerViewModel = new RegisterViewModel();
+            registerViewModel.RoleList = listItems;
+            registerViewModel.ReturnUrl = returnUrl;
+            return View(registerViewModel);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string? returnUrl = null)
@@ -224,6 +246,14 @@ namespace CalendarSynchronizerWeb.Controllers
                 var result = await userManager.CreateAsync(user, registerViewModel.Password);
                 if (result.Succeeded)
                 {
+                    if(registerViewModel.RoleSelected!= null && registerViewModel.RoleSelected.Length>0 && registerViewModel.RoleSelected == "Admin")
+                    {
+                        await userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await userManager.AddToRoleAsync(user, "User");
+                    }
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
