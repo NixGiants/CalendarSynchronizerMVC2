@@ -60,6 +60,33 @@ namespace CalendarSynchronizerWeb.Controllers
         }
 
         [HttpGet]
+        public IActionResult ResetPassword(string? code = null)
+        {
+            return code == null? View("Error") : View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPassword)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(resetPassword.Email);
+                if(user == null)
+                {
+                    ModelState.AddModelError("Email:", "User Not found");
+                    return View();
+                }
+                var result = await userManager.ResetPasswordAsync(user, resetPassword.Code, resetPassword.Password);
+                if (result.Succeeded)
+                {
+                    RedirectToAction("ResetPasswordConfirmation");
+                }
+            }
+            return View(resetPassword);
+        } 
+
+        [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
             LoginViewModel loginViewModel = new LoginViewModel();
