@@ -1,8 +1,9 @@
 ﻿
 @using CalendarSynchronizerWeb.ViewModels
+@using Core.Models
 @using Microsoft.AspNetCore.Identity
 @model LoginViewModel
-@inject SignInManager<IdentityUser> signInManager
+@inject SignInManager<AppUser> signInManager
 
 <h1 class="text-info">Log in</h1>
 <div class="row">
