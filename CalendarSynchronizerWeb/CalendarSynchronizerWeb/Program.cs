@@ -22,9 +22,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(
             x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
-
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = "516669132332-ril060aftkfjnc8gq5mqurffc3t95n8q.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+    });
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 4;
