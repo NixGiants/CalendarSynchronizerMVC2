@@ -1,5 +1,6 @@
 using BLL.Intrfaces;
 using BLL.Services;
+using CalendarSynchronizerWeb.Authorization;
 using CalendarSynchronizerWeb.Extensions;
 using CalendarSynchronizerWeb.Helpers;
 using CalendarSynchronizerWeb.Models;
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
             builder.Configuration.GetConnectionString("DefaultConnection"),
             x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddRoles<IdentityRole>();
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
@@ -30,21 +31,27 @@ builder.Services.AddAuthentication()
         options.ClientSecret = "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";
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OnlyAdminChecker", policy => policy.Requirements.Add(new OnlyAdminAuthorization()));
+    options.AddPolicy("CheckUserNameTeddy", policy => policy.Requirements.Add(new UserNameRequirement("teddy")));
+});
+
+
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 4;
     opt.Password.RequireLowercase = true;
     opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(20);
     opt.Lockout.MaxFailedAccessAttempts = 5;
-    //opt.SignIn.RequireConfirmedAccount = true;
+    
 });
 
 builder.Services.AddSession();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddTransient<ISendGridEmailService, SendGridEmailService>();
-//builder.Services.AddScoped<AppUser>();
-//builder.Services.AddScoped<UserManager<AppUser>>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,8 +68,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
