@@ -12,7 +12,7 @@ namespace Core.Models
     public class Calendar
     {
         [Key]
-        public string CalendarId { get; set; } = new Guid().ToString();
+        public string CalendarId { get; set; } = Guid.NewGuid().ToString();
 
         [Required]
         public string Summary { get; set; }

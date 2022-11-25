@@ -6,6 +6,7 @@ using Core.Interfaces;
 using BLL.Services;
 using CalendarSynchronizerWeb.Extensions;
 using Google.Apis.Calendar.v3.Data;
+using CalendarSynchronizerWeb.Services;
 
 namespace CalendarSynchronizerWeb.Controllers
 {

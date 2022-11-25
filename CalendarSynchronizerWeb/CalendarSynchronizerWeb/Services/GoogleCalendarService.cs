@@ -6,7 +6,7 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 
 
-namespace BLL.Services
+namespace CalendarSynchronizerWeb.Services
 {
     public class GoogleCalendarService
     {
