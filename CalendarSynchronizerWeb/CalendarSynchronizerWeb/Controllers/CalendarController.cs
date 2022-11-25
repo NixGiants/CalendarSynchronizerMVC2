@@ -1,6 +1,6 @@
 ﻿using BLL.Intrfaces;
 using BLL.Services;
-using CalendarSynchronizerWeb.ViewModels;
+using CalendarSynchronizerWeb.ViewModels.Calendar;
 using Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,7 @@ namespace CalendarSynchronizerWeb.Controllers
 
         // GET: CalendarController
         [HttpGet]
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
@@ -43,13 +43,29 @@ namespace CalendarSynchronizerWeb.Controllers
             }
         }
 
-        // GET: CalendarController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> SingleUserIndex()
         {
-            return View();
+            try
+            {
+                var userCalendars = await calendarService.GetByUserId(userManager.GetUserId(User));
+
+                if (userCalendars == null)
+                {
+                    return View("Error");
+                }
+
+                return View(userCalendars);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.Message);
+                return View("Error");
+            }
         }
 
         // GET: CalendarController/Create
+        [HttpGet]
         public ActionResult Create()
         {
             return View();
@@ -57,66 +73,89 @@ namespace CalendarSynchronizerWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CalendarViewModel viewModel)
+        public async Task<IActionResult> Create(CalendarViewModel viewModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                Calendar calendar = new Calendar
+                try
                 {
-                    Summary = viewModel.Summary,
-                    Description = viewModel.Description,
-                    TimeZone = viewModel.TimeZone,
-                    AppUserId = userManager.GetUserId(User)
-                };
-                await calendarService.Create(calendar);
-                return RedirectToAction(nameof(Index));
-            }
-            catch(Exception e)
-            {
-                logger.LogError(e.Message);
-                return View();
+                    Calendar calendar = new Calendar
+                    {
+                        Summary = viewModel.Summary,
+                        Description = viewModel.Description == null ? "" : viewModel.Description,
+                        TimeZone = viewModel.TimeZone == null ? "" : viewModel.TimeZone,
+                        AppUserId = userManager.GetUserId(User)
+                    };
 
+                    await calendarService.Create(calendar);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e.Message);
+                    return View();
+
+                }
             }
+            return View(viewModel);
         }
 
         // GET: CalendarController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(string calendarId)
         {
-            return View();
+            var calendar = await calendarService.Get(calendarId);
+            CalendarUpdateViewModel viewModel = new CalendarUpdateViewModel
+            {
+                CalendarId = calendar!.CalendarId,
+                Summary = calendar.Summary,
+                Description = calendar.Description,
+                TimeZone = calendar.TimeZone
+            };
+
+            return View(viewModel);
         }
 
-        // POST: CalendarController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(CalendarUpdateViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Calendar calendar = new Calendar
+                    {
+                        CalendarId = viewModel.CalendarId,
+                        Summary = viewModel.Summary,
+                        Description = viewModel.Description == null ? "" : viewModel.Description,
+                        TimeZone = viewModel.TimeZone == null ? "" : viewModel.TimeZone
+                    };
+
+                    await calendarService.Update(calendar, calendar.CalendarId);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e.Message);
+                    return View();
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string calendarId)
         {
             try
             {
+                await calendarService.Delete(calendarId);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception e)
             {
-                return View();
-            }
-        }
-
-        // GET: CalendarController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CalendarController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                logger.LogError(e.Message);
                 return View();
             }
         }
