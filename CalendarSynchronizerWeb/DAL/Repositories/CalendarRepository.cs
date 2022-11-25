@@ -39,7 +39,7 @@ namespace DAL.Repositories
 
             if (calendar == null)
             {
-                throw new Exception($"No Calendar With {id} exception");
+                throw new ArgumentException($"No Calendar With {id} exception");
             }
 
             dbContext.Calendars.Remove(calendar);
@@ -53,7 +53,7 @@ namespace DAL.Repositories
 
             if(calendar == null)
             {
-                throw new Exception($"No calendars with id {calendarId}");
+                throw new ArgumentException($"No calendars with id {calendarId}");
             }
 
             return calendar;
@@ -75,7 +75,7 @@ namespace DAL.Repositories
 
             if (dbCalendar == null)
             {
-                throw new Exception($"No Calendar with id {id} was found to update");
+                throw new ArgumentException($"No Calendar with id {id} was found to update");
             }
 
             dbCalendar.Description = string.IsNullOrEmpty(calendar.Description) ? dbCalendar.Description : calendar.Description;
