@@ -27,6 +27,15 @@ namespace CalendarSynchronizerWeb.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+
+
         public async Task InitialSync(/*calendarId param*/)
         {
             GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
