@@ -6,7 +6,7 @@ namespace DAL.Interfaces
     {
         public Task Create(Schedule schedule);
         public Task<Schedule> GetSchedule(Guid id);
-        public Task<List<Schedule>> GetUserSchedules(string userId);
+        public Task<List<Schedule>> GetCalendarSchedules(string calendarId);
 
         public Task Delete(Guid id);
 

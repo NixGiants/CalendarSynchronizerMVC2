@@ -1,9 +1,10 @@
 ﻿using Core.Models;
 using DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
-    internal class ScheduleRepository : IScheduleRepository
+   public class ScheduleRepository : IScheduleRepository
     {
         private readonly ApplicationDbContext dbContext;
 
@@ -12,34 +13,73 @@ namespace DAL.Repositories
             dbContext = context;
         }
 
-        public Task Create(Schedule schedule)
+        public async Task Create(Schedule schedule)
         {
-            throw new NotImplementedException();
+            var calendar = await dbContext.Calendars.FindAsync(schedule.CalendarId);
+
+            if (calendar == null)
+            {
+                throw new ArgumentNullException($"No calendars with Id {schedule.CalendarId} for calenar");
+            }
+
+            schedule.Calendar = calendar;
+            await dbContext.Schedules.AddAsync(schedule);
+            await dbContext.SaveChangesAsync();
+            return;
         }
 
-        public Task Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var schedule = await dbContext.Schedules.FindAsync(id);
+
+            if (schedule is null)
+            {
+                throw new ArgumentException($"No Schedule with id {id}");
+            }
+
+            dbContext.Schedules.Remove(schedule);
+            await dbContext.SaveChangesAsync();
+            return;
         }
 
-        public Schedule GetSchedule(Guid id)
+        public async Task<Schedule> GetSchedule(Guid id)
         {
-            throw new NotImplementedException();
+            var schedule = await dbContext.Schedules.FindAsync(id);
+
+            if (schedule is null)
+            {
+                throw new ArgumentException($"No Schedule with id {id}");
+            }
+
+            return schedule;
         }
 
-        public Task<List<Schedule>> GetUserSchedules(string userId)
+        public async Task<List<Schedule>> GetCalendarSchedules(string calendarId)
         {
-            throw new NotImplementedException();
+            return await dbContext.Schedules.Include(sc => sc.Calendar).Where(sc => sc.CalendarId == calendarId).ToListAsync();
         }
 
-        public Task Update(Guid id, Schedule schedule)
+        public async Task Update(Guid id, Schedule schedule)
         {
-            throw new NotImplementedException();
-        }
+            var dbSchedule = await dbContext.Schedules.FindAsync(id);
 
-        Task<Schedule> IScheduleRepository.GetSchedule(Guid id)
-        {
-            throw new NotImplementedException();
+            if (dbSchedule is null)
+            {
+                throw new ArgumentException($"No Schedule with id {id}");
+            }
+
+            dbSchedule.Subject = schedule.Subject == null ? dbSchedule.Subject : schedule.Subject;
+            dbSchedule.StartTime = schedule.StartTime ?? dbSchedule.StartTime;
+            dbSchedule.EndTime = schedule.EndTime ?? dbSchedule.EndTime;
+            dbSchedule.StartTimezone = schedule.StartTimezone ?? dbSchedule.StartTimezone;
+            dbSchedule.EndTimezone = schedule.EndTimezone ?? dbSchedule.EndTimezone;
+            dbSchedule.Status = schedule.Status??dbSchedule.Status;
+            dbSchedule.Description = schedule.Description ?? dbSchedule.Description;
+            dbSchedule.Location = schedule.Location ?? dbSchedule.Location;
+            dbSchedule.IsAllDay = schedule.IsAllDay;
+            dbContext.Update(dbSchedule);
+            await dbContext.SaveChangesAsync();
+            return;
         }
     }
 }
