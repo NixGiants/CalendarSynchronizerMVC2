@@ -8,6 +8,8 @@ using CalendarSynchronizerWeb.Services;
 using CalendarSynchronizerWeb.Services.Interfaces;
 using Core.Models;
 using DAL;
+using DAL.Interfaces;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddLogging();
 builder.Services.ConfigureWritable<GoogleAuthCreds>(builder.Configuration.GetSection("GoogleAuthCreds"));
 builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
@@ -48,6 +51,11 @@ builder.Services.Configure<IdentityOptions>(opt =>
 });
 
 builder.Services.AddSession();
+
+builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+
+
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddTransient<ISendGridEmailService, SendGridEmailService>();
