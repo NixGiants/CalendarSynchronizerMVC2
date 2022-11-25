@@ -20,6 +20,14 @@ namespace DAL.Repositories
 
         public async Task Create(Calendar calendar)
         {
+            var appUser = await dbContext.AppUsers.FindAsync(calendar.AppUserId);
+
+            if(appUser == null)
+            {
+                throw new ArgumentNullException($"No Users with Id {calendar.AppUserId} for calenar");
+            }
+
+            calendar.AppUser = appUser;
             dbContext.Calendars.Add(calendar);
             await dbContext.SaveChangesAsync();
             return;
@@ -37,6 +45,18 @@ namespace DAL.Repositories
             dbContext.Calendars.Remove(calendar);
             await dbContext.SaveChangesAsync();
             return;
+        }
+
+        public async Task<Calendar> Get(string calendarId)
+        {
+            var calendar = await dbContext.Calendars.FindAsync(calendarId);
+
+            if(calendar == null)
+            {
+                throw new Exception($"No calendars with id {calendarId}");
+            }
+
+            return calendar;
         }
 
         public async Task<List<Calendar>> GetAll()
