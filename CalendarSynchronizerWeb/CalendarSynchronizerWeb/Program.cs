@@ -25,6 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
             builder.Configuration.GetConnectionString("DefaultConnection"),
             x => x.MigrationsAssembly("CalendarSynchronizerWeb")));
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
 builder.Services.AddAuthentication()
@@ -53,9 +54,12 @@ builder.Services.Configure<IdentityOptions>(opt =>
 builder.Services.AddSession();
 
 builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
 
 builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddTransient<ISendGridEmailService, SendGridEmailService>();

@@ -3,6 +3,10 @@
 
 @inject SignInManager<AppUser> SignInManager
 @inject UserManager<AppUser> UserManager
+
+@{
+
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,28 +34,40 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
-                        </li>
+
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Hello @UserManager.GetUserName(User)</a>
+                                <a class="nav-link text-dark" href="#">Hello @UserManager.GetUserName(User)</a>
                             </li>
+                            {
+                                var currentUser = await UserManager.GetUserAsync(User);
+
+                                @if (await UserManager.IsInRoleAsync(currentUser, "Admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Calendar" asp-action="Index">All Calendars</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="User" asp-action="Index">Users</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Calendar" asp-action="SingleUserIndex">Your Calendars</a>
+                                    </li>
+                                }
+                            }
+
                             <li class="nav-item">
                                 <form id="logoutForm" method="post" class="form-inline" asp-controller="Account"
                                   asp-action="LogOff">
                                     <button type="submit" class="btn nav-link">Logout</button>
                                 </form>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Calendar" asp-action="Index">All Calendars</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Calendar" asp-action="SingleUserIndex">User Calendars</a>
                             </li>
                         }
                         else
@@ -61,12 +77,6 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                            <li class="nav-item">
-                                <form id="logoutForm" method="post" class="form-inline" asp-controller="Account"
-                                  asp-action="LogOff">
-                                    <button type="submit" class="btn nav-link">Logout</button>
-                                </form>
                             </li>
                         }
                     </ul>

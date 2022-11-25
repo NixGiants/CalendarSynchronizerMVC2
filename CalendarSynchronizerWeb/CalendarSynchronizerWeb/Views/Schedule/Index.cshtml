@@ -1,13 +1,19 @@
 ﻿@using Core.Models
-@model IEnumerable<Calendar>
+
+@model IEnumerable<Schedule>
 
 <br />
 <div class="row">
-    <div class="col-6">
-        <h2 class="text-primary">All Calendars List </h2>
+    <div>
+        <div class="col-6">
+            <h2 class="text-primary"> Your Events </h2>
+        </div>
+        <div class="col-6">
+            <h2 class="text-primary">Calendar Summary @if(Model.Any()){ @Model.ToList()[0].Calendar.Summary }</h2>
+        </div>
     </div>
     <div class="col-6 text-right">
-        <a asp-action="Create" asp-controller="Calendar" class="btn btn-primary">Create New Calendar</a>
+        <a asp-action="Create" asp-controller="Schedule" asp-route-calendarId="" class="btn btn-primary">Create New Event</a>
     </div>
 </div>
 <div class="p-4 border rounded">
@@ -16,16 +22,16 @@
         <table class="table table-striped border">
             <tr class="table-secondary">
                 <th>
-                    CalendarId
+                    Schedule Id
                 </th>
                 <th>
-                    Summary
+                    Subject
                 </th>
                 <th>
-                    Description
+                    Start Time
                 </th>
                 <th>
-                    Time Zone
+                    End Time
                 </th>
                 <th>Actions</th>
             </tr>
@@ -36,21 +42,21 @@
                         @item.CalendarId
                     </td>
                     <td>
-                        @item.Summary
+                        @item.Subject
                     </td>
                     <td>
-                        @item.Description
+                        @item.StartTime
                     </td>
                     <td>
-                        @item.TimeZone
+                        @item.EndTime
                     </td>
                     <td>
                         <div class="text-center">
-                            <form asp-action="Delete" asp-route-calendarId="@item.CalendarId">
-                                <a asp-action="Edit" asp-route-calendarId="@item.CalendarId" class="btn btn-info text-white">
+                            <form asp-action="Delete" asp-route-scheduleId="@item.Id">
+                                <a asp-action="Edit" asp-route-scheduleId="@item.Id" class="btn btn-info text-white">
                                     Edit
                                 </a>
-                               
+
                                 <button type="submit" onclick="return confirm('Are you sure you want to delete this?')"
                                 class="btn btn-danger">
                                     Delete

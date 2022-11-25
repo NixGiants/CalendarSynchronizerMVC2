@@ -1,11 +1,16 @@
 ﻿using Core.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace DAL.Interfaces
+namespace BLL.Intrfaces
 {
-    public interface IScheduleRepository
+    public interface IScheduleService
     {
         public Task Create(Schedule schedule);
-        public Task<Schedule> GetSchedule(Guid id);
+        public Task<Schedule?> GetSchedule(Guid id);
         public Task<List<Schedule>> GetCalendarSchedules(string calendarId);
 
         public Task Delete(Guid id);

@@ -1,14 +1,16 @@
 ﻿using CalendarSynchronizerWeb.ViewModels;
 using Core.Models;
 using DAL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections;
+using System.Data;
 using System.Security.Claims;
 
 namespace CalendarSynchronizerWeb.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext dbContext;

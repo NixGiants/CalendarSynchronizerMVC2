@@ -1,13 +1,13 @@
 ﻿using BLL.Intrfaces;
-using BLL.Services;
 using CalendarSynchronizerWeb.ViewModels.Calendar;
 using Core.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CalendarSynchronizerWeb.Controllers
 {
+    [Authorize]
     public class CalendarController : Controller
     {
         private readonly ICalendarService calendarService;
@@ -88,12 +88,12 @@ namespace CalendarSynchronizerWeb.Controllers
                     };
 
                     await calendarService.Create(calendar);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(SingleUserIndex));
                 }
                 catch (Exception e)
                 {
                     logger.LogError(e.Message);
-                    return View();
+                    return View("Error");
 
                 }
             }
@@ -104,6 +104,7 @@ namespace CalendarSynchronizerWeb.Controllers
         public async Task<IActionResult> Edit(string calendarId)
         {
             var calendar = await calendarService.Get(calendarId);
+
             CalendarUpdateViewModel viewModel = new CalendarUpdateViewModel
             {
                 CalendarId = calendar!.CalendarId,
@@ -158,6 +159,11 @@ namespace CalendarSynchronizerWeb.Controllers
                 logger.LogError(e.Message);
                 return View();
             }
+        }
+
+        public IActionResult ScheduleRedirect(string calendarId)
+        {
+            return RedirectToAction("Index", "Schedule", new {calendarId = calendarId});
         }
     }
 }
