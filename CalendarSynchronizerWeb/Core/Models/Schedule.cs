@@ -8,7 +8,7 @@ namespace Core.Models
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string ExternalId { get; set; }
+        public string ExternalId { get; set; } = "";
         public string Subject { get; set; }
         public DateTime? StartTime { get; set; }
         public string StartTimezone { get; set; }
@@ -24,6 +24,8 @@ namespace Core.Models
 
         [ForeignKey("CalendarId")]
         public string CalendarId { get; set; }
+
+        public Calendar Calendar { get; set; }
 
         public int CompareTo(Schedule other)
         {
