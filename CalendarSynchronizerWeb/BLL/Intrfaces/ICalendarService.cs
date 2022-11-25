@@ -14,6 +14,8 @@ namespace BLL.Intrfaces
 
         public Task<List<Calendar>> GetByUserId(string userId);
 
+        public Task<Calendar?> Get(string calendarId);
+
         public Task Delete(string id);
 
         public Task Update(Calendar calendar, string id);

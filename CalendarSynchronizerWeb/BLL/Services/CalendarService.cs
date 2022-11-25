@@ -53,6 +53,26 @@ namespace BLL.Services
             return;
         }
 
+        public async Task<Calendar?> Get(string calendarId)
+        {
+            if (string.IsNullOrEmpty(calendarId))
+            {
+                throw new ArgumentException("Bad Id was given");
+            }
+
+            try
+            {
+                var calendar = await calendarRepository.Get(calendarId);
+                return calendar;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.Message);
+            }
+
+            return null;
+        }
+
         public async Task<List<Calendar>> GetAll()
         {
             List<Calendar> calendars = new List<Calendar>();
