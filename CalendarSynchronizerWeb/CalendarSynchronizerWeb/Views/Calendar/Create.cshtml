@@ -1,0 +1,79 @@
+﻿@using CalendarSynchronizerWeb.ViewModels
+@model CalendarViewModel
+
+@{
+    var title = "Create Calendar";
+}
+
+<form method="post">
+    @if (Model != null && !String.IsNullOrEmpty(Model.CalendarId))
+    {
+        title = "Edit Role";
+        <input asp-for="@Model.CalendarId" hidden />
+    }
+
+    <div class="border p-3 bg-white">
+        <div class="form-group row">
+            <h2 class="text-info pl-3">@title</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="CalendarId"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="CalendarId" readonly class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Summary"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Summary" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Summary" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Description" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="TimeZone"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="TimeZone" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="TimeZone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-8 offset-4 row">
+                        <div class="col">
+                            @if (Model != null && !String.IsNullOrEmpty(Model.CalendarId))
+                            {
+                            //update
+                                <input type="submit" class="btn btn-info w-100" value="Update" />
+                            }
+                            else
+                            {
+                                //create
+                                <input type="submit" class="btn btn-primary w-100" value="Create" />
+                            }
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-success w-100">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
