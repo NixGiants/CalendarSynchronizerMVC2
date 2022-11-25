@@ -1,0 +1,129 @@
+﻿@using CalendarSynchronizerWeb.ViewModels.Schedule
+@model ScheduleViewModel
+
+@{
+    var title = "Create Event";
+}
+
+<form method="post">
+    @*    @if (Model != null && !String.IsNullOrEmpty(Model.CalendarId))
+    {
+    title = "Edit Role";
+    <input asp-for="@Model.Id" hidden />
+    }*@
+
+    <div class="border p-3 bg-white">
+        <div class="form-group row">
+            <h2 class="text-info pl-3">@title</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Id"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Id" readonly class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Subject"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Subject" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="StartTime"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="StartTime" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="StartTimeZone"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="StartTimeZone" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="StartTimeZone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="EndTime"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="EndTime" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="EndTimeZone"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="EndTimeZone" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="EndTimeZone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Status"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Status" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Description" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="Location"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Location" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-4">
+                        <label asp-for="IsAllDay"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="IsAllDay" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="IsAllDay" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2 ">
+                    <div class="col-8 offset-4 row">
+                        <div class="col">
+                            @if (Model != null && !String.IsNullOrEmpty(Model.CalendarId))
+                            {
+                            //update
+                                <input type="submit" class="btn btn-info w-100" value="Update" />
+                            }
+                            else
+                            {
+                                //create
+                                <input type="submit" class="btn btn-primary w-100" value="Create" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
