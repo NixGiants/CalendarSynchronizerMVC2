@@ -19,7 +19,6 @@ namespace CalendarSynchronizerWeb.Controllers
         }
 
         private const string RedirectUrl = "https://localhost:7060/GoogleAuth/Code";
-        //private const string CalendarScope = "https://www.googleapis.com/auth/calendar.readonly";
         private const string CalendarScope = "https://www.googleapis.com/auth/calendar";
         private const string PkceSessionKey = "codeVerifier";   
 
