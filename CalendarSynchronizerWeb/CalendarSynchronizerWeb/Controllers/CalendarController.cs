@@ -79,7 +79,7 @@ namespace CalendarSynchronizerWeb.Controllers
             {
                 try
                 {
-                    Calendar calendar = new Calendar
+                    CalendarMy calendar = new CalendarMy
                     {
                         Summary = viewModel.Summary,
                         Description = viewModel.Description == null ? "" : viewModel.Description,
@@ -124,7 +124,7 @@ namespace CalendarSynchronizerWeb.Controllers
             {
                 try
                 {
-                    Calendar calendar = new Calendar
+                    CalendarMy calendar = new CalendarMy
                     {
                         CalendarId = viewModel.CalendarId,
                         Summary = viewModel.Summary,
