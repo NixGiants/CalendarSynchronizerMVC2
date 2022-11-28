@@ -19,7 +19,7 @@ namespace CalendarSynchronizerWeb.Controllers
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IActionResult> Index(string calendarId)
+        public async Task<IActionResult> Index(string calendarId, string searchString)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace CalendarSynchronizerWeb.Controllers
                 {
                     httpContextAccessor.HttpContext.Response.Cookies.Append("calendarId", calendarId);
                 }
-                var schedules = await scheduleService.GetCalendarSchedules(calendarId);
+                var schedules = await scheduleService.GetCalendarSchedules(calendarId, searchString);
                 return View(schedules);
             }
             catch (Exception e)
