@@ -23,8 +23,8 @@ namespace CalendarSynchronizerWeb.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        //[HttpGet]
+        public IActionResult Index(string searchString)
         {
             var userList = dbContext.AppUsers.ToList();
             var roleList = dbContext.UserRoles.ToList();
@@ -41,6 +41,11 @@ namespace CalendarSynchronizerWeb.Controllers
                 {
                     user.Role = roles.FirstOrDefault(u => u.Id == role.RoleId).Name;
                 }
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                userList = userList.Where(u => u.UserName!.Contains(searchString)).ToList();
             }
 
             return View(userList);
@@ -178,7 +183,5 @@ namespace CalendarSynchronizerWeb.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }
