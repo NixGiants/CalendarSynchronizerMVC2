@@ -23,11 +23,15 @@ namespace CalendarSynchronizerWeb.Controllers
 
         // GET: CalendarController
         [HttpGet]
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index( string sortOrder, string searchString)
         {
+            ViewData["SummarySortParam"] = String.IsNullOrEmpty(sortOrder) ? "summary_desc" : "";
+            ViewData["DescriptionSortParam"] = sortOrder == "Description"? "description_desc":"Description";
+            ViewData["CalendarIdSortParam"] = sortOrder == "CalendarId" ? "calendarId_desc" : "CalendarId";
+           
             try
             {
-                var calendars = await calendarService.GetAll(searchString);
+                var calendars = await calendarService.GetAll(sortOrder, searchString);
 
                 if (calendars == null)
                 {
