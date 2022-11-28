@@ -73,7 +73,7 @@ namespace BLL.Services
             return null;
         }
 
-        public async Task<List<CalendarMy>> GetAll(string? searchString)
+        public async Task<List<CalendarMy>> GetAll(string sortOrder, string? searchString)
         {
             List<CalendarMy> calendars = new List<CalendarMy>();
 
@@ -84,6 +84,28 @@ namespace BLL.Services
             catch (Exception e)
             {
                 logger.LogError(e.Message);
+            }
+
+            switch (sortOrder)
+            {
+                case "summary_desc":
+                    calendars = calendars.OrderByDescending(s => s.Summary).ToList();
+                    break;
+                case "description_desc":
+                    calendars = calendars.OrderByDescending(c => c.Description).ToList();
+                    break;
+                case "Description":
+                    calendars = calendars.OrderBy(c => c.Description).ToList();
+                    break;
+                case "CalendarId_desc":
+                    calendars = calendars.OrderByDescending(c => c.CalendarId).ToList();
+                    break;
+                case "CalendarId":
+                    calendars = calendars.OrderBy(c => c.CalendarId).ToList();
+                    break;
+                default:
+                    calendars = calendars.OrderBy(c => c.Summary).ToList();
+                    break;
             }
 
             if (!String.IsNullOrEmpty(searchString))

@@ -10,7 +10,7 @@ namespace BLL.Intrfaces
     public interface ICalendarService
     {
         public Task Create(CalendarMy calendar);
-        public Task<List<CalendarMy>> GetAll(string? searchString);
+        public Task<List<CalendarMy>> GetAll(string sortOrder, string? searchString);
 
         public Task<List<CalendarMy>> GetByUserId(string userId, string? searchString);
 
