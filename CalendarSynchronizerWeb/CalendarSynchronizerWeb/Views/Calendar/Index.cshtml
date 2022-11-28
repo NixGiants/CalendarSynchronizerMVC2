@@ -22,13 +22,13 @@
         <table class="table table-striped border">
             <tr class="table-secondary">
                 <th>
-                    CalendarId
+                     <a asp-action="Index" asp-route-sortOrder="@ViewData["CalendarIdSortParam"]">@Html.DisplayNameFor(model=>model.CalendarId) CalendarId</a>
                 </th>
                 <th>
-                    Summary
+                   <a asp-action="Index" asp-route-sortOrder="@ViewData["SummarySortParam"]">@Html.DisplayNameFor(model=>model.Summary)</a>
                 </th>
                 <th>
-                    Description
+                   <a asp-action="Index" asp-route-sortOrder="@ViewData["DescriptionSortParam"]">@Html.DisplayNameFor(model=>model.Description)</a>
                 </th>
                 <th>
                     Time Zone
