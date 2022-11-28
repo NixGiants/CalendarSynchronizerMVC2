@@ -1,4 +1,5 @@
-﻿using CalendarSynchronizerWeb.Managers.Interfaces;
+﻿using BLL.Intrfaces;
+using BLL.Managers.Interfaces;
 using Core.Models;
 using Google;
 using Google.Apis.Calendar.v3;
@@ -6,9 +7,9 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 
 
-namespace CalendarSynchronizerWeb.Services
+namespace BLL.Services
 {
-    public class GoogleCalendarService
+    public class GoogleCalendarService :IGoogleCalendarService
     {
         private readonly IConfigurationManager<GoogleAuthCreds> _configurationManager;
         private CalendarService _service;
@@ -39,7 +40,6 @@ namespace CalendarSynchronizerWeb.Services
                 throw ex;
 
             }
-
         }
 
         public async Task<Events> GetCalendarEventsList(string calendarId = "primary")

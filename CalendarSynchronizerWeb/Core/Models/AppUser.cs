@@ -21,6 +21,6 @@ namespace Core.Models
         [NotMapped]
         public IEnumerable<SelectListItem>? RoleList { get; set; }
 
-        public List<Calendar>? Calendars { get; set; }
+        public List<CalendarMy>? Calendars { get; set; }
     }
 }

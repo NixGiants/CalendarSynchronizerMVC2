@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class CalendarService : ICalendarService
+    public class CalendarServiceMy : ICalendarService
     {
         private readonly ICalendarRepository calendarRepository;
-        private readonly ILogger<CalendarService> logger;
+        private readonly ILogger<CalendarServiceMy> logger;
 
-        public CalendarService(ICalendarRepository calendarRepository, ILogger<CalendarService> logger)
+        public CalendarServiceMy(ICalendarRepository calendarRepository, ILogger<CalendarServiceMy> logger)
         {
             this.calendarRepository = calendarRepository;
             this.logger = logger;
         }
 
-        public async Task Create(Calendar calendar)
+        public async Task Create(CalendarMy calendar)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace BLL.Services
             return;
         }
 
-        public async Task<Calendar?> Get(string calendarId)
+        public async Task<CalendarMy?> Get(string calendarId)
         {
             if (string.IsNullOrEmpty(calendarId))
             {
@@ -73,9 +73,9 @@ namespace BLL.Services
             return null;
         }
 
-        public async Task<List<Calendar>> GetAll()
+        public async Task<List<CalendarMy>> GetAll()
         {
-            List<Calendar> calendars = new List<Calendar>();
+            List<CalendarMy> calendars = new List<CalendarMy>();
 
             try
             {
@@ -89,14 +89,14 @@ namespace BLL.Services
             return calendars;
         }
 
-        public async Task<List<Calendar>> GetByUserId(string userId)
+        public async Task<List<CalendarMy>> GetByUserId(string userId)
         {
             if (string.IsNullOrEmpty(userId))
             {
                 throw new ArgumentException("Bad Id was given");
             }
 
-            List<Calendar> calendars = new List<Calendar>();
+            List<CalendarMy> calendars = new List<CalendarMy>();
 
             try
             {
@@ -110,7 +110,7 @@ namespace BLL.Services
             return calendars;
         }
 
-        public async Task Update(Calendar calendar, string id)
+        public async Task Update(CalendarMy calendar, string id)
         {
             if (string.IsNullOrEmpty(id))
             {
