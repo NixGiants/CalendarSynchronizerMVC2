@@ -13,7 +13,7 @@ namespace DAL
         }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<Calendar> Calendars { get; set; }
+        public DbSet<CalendarMy> Calendars { get; set; }
 
     }
 }
