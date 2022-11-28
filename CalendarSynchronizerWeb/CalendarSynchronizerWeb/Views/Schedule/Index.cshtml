@@ -16,6 +16,12 @@
         <a asp-action="Create" asp-controller="Schedule" asp-route-calendarId="" class="btn btn-primary">Create New Event</a>
     </div>
 </div>
+<form asp-controller="Schedule" asp-action="Index" method="get">
+    <p>
+        Description: <input type="text" name="searchString" />
+        <input class="btn btn-secondary" type="submit" value="Search" />
+    </p>
+</form>
 <div class="p-4 border rounded">
     @if (Model.Count() > 0)
     {
