@@ -13,6 +13,12 @@
         <a asp-action="Create" asp-controller="Calendar" class="btn btn-primary">Create New Calendar</a>
     </div>
 </div>
+<form asp-controller="Calendar" asp-action="SingleUserIndex" method="get">
+    <p>
+        Description: <input type="text" name="searchString" />
+        <input class="btn btn-secondary" type="submit" value="Search" />
+    </p>
+</form>
 <div class="p-4 border rounded">
     @if (Model.Count() > 0)
     {
