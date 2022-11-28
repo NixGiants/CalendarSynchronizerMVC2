@@ -1,19 +1,21 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using CalendarSynchronizerWeb.Managers.Interfaces;
+using BLL.Managers.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
-namespace CalendarSynchronizerWeb.Managers
+namespace BLL.Managers
 {
     public class ConfigurationManager<T>: IConfigurationManager<T> where T : class, new()
     {
-        private readonly IWebHostEnvironment _environment;
+        private readonly IHostEnvironment _environment;
         private readonly IOptionsMonitor<T> _options;
         private readonly IConfigurationRoot _configuration;
         private readonly string _section;
         private readonly string _file;
         public ConfigurationManager(
-            IWebHostEnvironment environment,
+            IHostEnvironment environment,
             IOptionsMonitor<T> options,
             IConfigurationRoot configuration,
             string section,

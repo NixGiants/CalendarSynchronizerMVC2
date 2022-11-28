@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace CalendarSynchronizerWeb.Managers.Interfaces
+namespace BLL.Managers.Interfaces
 {
     public interface IConfigurationManager<out T> : IOptions<T> where T : class, new()
     {
