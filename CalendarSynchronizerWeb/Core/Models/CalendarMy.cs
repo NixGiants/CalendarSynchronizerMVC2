@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class Calendar
+    public class CalendarMy
     {
         [Key]
         public string CalendarId { get; set; } = Guid.NewGuid().ToString();
