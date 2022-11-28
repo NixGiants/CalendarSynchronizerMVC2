@@ -73,7 +73,7 @@ namespace BLL.Services
             return null;
         }
 
-        public async Task<List<CalendarMy>> GetAll()
+        public async Task<List<CalendarMy>> GetAll(string? searchString)
         {
             List<CalendarMy> calendars = new List<CalendarMy>();
 
@@ -86,10 +86,15 @@ namespace BLL.Services
                 logger.LogError(e.Message);
             }
 
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                calendars = calendars.Where(c => c.Description.Contains(searchString)).ToList();
+            }
+
             return calendars;
         }
 
-        public async Task<List<CalendarMy>> GetByUserId(string userId)
+        public async Task<List<CalendarMy>> GetByUserId(string userId, string? searchString = null)
         {
             if (string.IsNullOrEmpty(userId))
             {
@@ -107,6 +112,11 @@ namespace BLL.Services
                 logger.LogError(e.Message);
             }
 
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                calendars = calendars.Where(c => c.Description.Contains(searchString)).ToList();
+            }
+
             return calendars;
         }
 
@@ -118,9 +128,9 @@ namespace BLL.Services
             }
             try
             {
-                await calendarRepository.Update(calendar ,id);
+                await calendarRepository.Update(calendar, id);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e.Message);
             }
