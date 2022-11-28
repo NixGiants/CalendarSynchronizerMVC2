@@ -18,7 +18,7 @@ namespace DAL.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task Create(Calendar calendar)
+        public async Task Create(CalendarMy calendar)
         {
             var appUser = await dbContext.AppUsers.FindAsync(calendar.AppUserId);
 
@@ -47,7 +47,7 @@ namespace DAL.Repositories
             return;
         }
 
-        public async Task<Calendar> Get(string calendarId)
+        public async Task<CalendarMy> Get(string calendarId)
         {
             var calendar = await dbContext.Calendars.FindAsync(calendarId);
 
@@ -59,17 +59,17 @@ namespace DAL.Repositories
             return calendar;
         }
 
-        public async Task<List<Calendar>> GetAll()
+        public async Task<List<CalendarMy>> GetAll()
         {
             return await dbContext.Calendars.Include(c => c.AppUser).ToListAsync();
         }
 
-        public async Task<List<Calendar>> GetByUserId(string userId)
+        public async Task<List<CalendarMy>> GetByUserId(string userId)
         {
             return await dbContext.Calendars.Where(c => c.AppUserId == userId).Include(c => c.AppUser).ToListAsync();
         }
 
-        public async Task Update(Calendar calendar, string id)
+        public async Task Update(CalendarMy calendar, string id)
         {
             var dbCalendar = dbContext.Calendars.Find(id);
 

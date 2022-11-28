@@ -9,15 +9,15 @@ namespace DAL.Interfaces
 {
     public interface ICalendarRepository
     {
-        public Task Create(Calendar calendar);
-        public Task<List<Calendar>> GetAll();
+        public Task Create(CalendarMy calendar);
+        public Task<List<CalendarMy>> GetAll();
 
-        public Task<List<Calendar>> GetByUserId(string userId);
+        public Task<List<CalendarMy>> GetByUserId(string userId);
 
-        public Task<Calendar> Get(string calendarId);
+        public Task<CalendarMy> Get(string calendarId);
 
         public Task Delete(string id);
 
-        public Task Update(Calendar calendar, string id);
+        public Task Update(CalendarMy calendar, string id);
     }
 }
