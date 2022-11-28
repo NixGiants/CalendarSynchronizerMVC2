@@ -1,6 +1,5 @@
 using BLL.Intrfaces;
 using BLL.Services;
-using CalendarSynchronizerWeb.Authorization;
 using CalendarSynchronizerWeb.Extensions;
 using CalendarSynchronizerWeb.Helpers;
 using CalendarSynchronizerWeb.Models;
@@ -37,8 +36,6 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("OnlyAdminChecker", policy => policy.Requirements.Add(new OnlyAdminAuthorization()));
-    options.AddPolicy("CheckUserNameTeddy", policy => policy.Requirements.Add(new UserNameRequirement("teddy")));
 });
 
 
@@ -57,8 +54,9 @@ builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
 
-builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<ICalendarService, CalendarServiceMy>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IGoogleCalendarService, GoogleCalendarService>();
 
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
