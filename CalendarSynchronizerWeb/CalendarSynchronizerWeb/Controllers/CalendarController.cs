@@ -23,11 +23,11 @@ namespace CalendarSynchronizerWeb.Controllers
 
         // GET: CalendarController
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             try
             {
-                var calendars = await calendarService.GetAll();
+                var calendars = await calendarService.GetAll(searchString);
 
                 if (calendars == null)
                 {
@@ -44,11 +44,11 @@ namespace CalendarSynchronizerWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SingleUserIndex()
+        public async Task<IActionResult> SingleUserIndex(string searchString)
         {
             try
             {
-                var userCalendars = await calendarService.GetByUserId(userManager.GetUserId(User));
+                var userCalendars = await calendarService.GetByUserId(userManager.GetUserId(User), searchString);
 
                 if (userCalendars == null)
                 {
