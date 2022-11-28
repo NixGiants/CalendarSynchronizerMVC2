@@ -1,5 +1,5 @@
-﻿using CalendarSynchronizerWeb.Managers;
-using CalendarSynchronizerWeb.Managers.Interfaces;
+﻿using BLL.Managers;
+using BLL.Managers.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
