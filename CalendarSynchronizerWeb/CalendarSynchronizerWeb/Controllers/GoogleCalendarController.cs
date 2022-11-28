@@ -1,12 +1,16 @@
-﻿using CalendarSynchronizerWeb.Managers.Interfaces;
+﻿using BLL.Managers.Interfaces;
 using Core.Models;
 using DAL;
 using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces;
-using BLL.Services;
 using CalendarSynchronizerWeb.Extensions;
 using Google.Apis.Calendar.v3.Data;
 using CalendarSynchronizerWeb.Services;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Services;
+using CalendarSynchronizerWeb.ViewModels.Calendar;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using BLL.Intrfaces;
 
 namespace CalendarSynchronizerWeb.Controllers
 {
@@ -16,15 +20,38 @@ namespace CalendarSynchronizerWeb.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IRepository<Schedule> _repository;
         private string calendarId = "test.calendar.google.com";
-        public GoogleCalendarController(IConfigurationManager<GoogleAuthCreds> configurationManager, ApplicationDbContext context)
+        private readonly CalendarService calendarService;
+        private readonly IGoogleCalendarService service;
+
+        public GoogleCalendarController(IConfigurationManager<GoogleAuthCreds> configurationManager, ApplicationDbContext context, IGoogleCalendarService service)
         {
             _configurationManager = configurationManager;
             _context = context;
+            this.calendarService = new CalendarService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = new CustomUserCredential(_configurationManager.Value.AccessToken),
+                ApplicationName = "CalendarSynchronizer"
+            });
+            this.service = service;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            CalendarList list = await calendarService.CalendarList.List().ExecuteAsync();
+            var calendarsFromGoogle = list.Items;
+            List<CalendarMy> calendars = new List<CalendarMy>();    
+            foreach(var item in calendarsFromGoogle)
+            {
+                calendars.Add(new CalendarMy
+                {
+                    CalendarId = item.Id,
+                    Summary = item.Summary,
+                    Description = item.Description,
+                    TimeZone = item.TimeZone,
+                });
+            }
+
+            return View(calendars);
         }
 
         [HttpGet]
@@ -34,11 +61,26 @@ namespace CalendarSynchronizerWeb.Controllers
         }
 
         [HttpPost]
+        public IActionResult Create(CalendarViewModel viewModel)
+        {
+            if (ModelState.IsValid) {
+                Calendar newCalendar = new Calendar()
+                {
+                    Summary =viewModel.Summary,
+                    Description=viewModel.Description,
+                    TimeZone=viewModel.TimeZone,
+                };
+                CalendarsResource.InsertRequest request = calendarService.Calendars.Insert(newCalendar);
+                Calendar calendar = request.Execute();
+                return RedirectToAction(nameof(Index));
+            }
 
+            return View("Error");
+        }
 
         public async Task InitialSync(/*calendarId param*/)
         {
-            GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
+            //GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
             var res1 = await service.GetAllCalendarListAsync();
 
             var res = await service.GetCalendarEventsList(calendarId);
@@ -78,7 +120,7 @@ namespace CalendarSynchronizerWeb.Controllers
             {
                 return;
             }
-            GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
+            //GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
             var res1 = await service.GetAllCalendarListAsync();
 
             var res = await service.GetCalendarEventsList(calendarId);
@@ -130,7 +172,7 @@ namespace CalendarSynchronizerWeb.Controllers
 
         public async Task IncrementalSync(/*calendarId param*/)
         {
-            GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
+            //GoogleCalendarService service = new GoogleCalendarService(_configurationManager);
 
             var calendar = service.GetCalenderService(); //TODO: refactor this trash
 
