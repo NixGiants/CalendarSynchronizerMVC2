@@ -25,7 +25,7 @@ namespace Core.Models
         [ForeignKey("CalendarId")]
         public string CalendarId { get; set; }
 
-        public Calendar Calendar { get; set; }
+        public CalendarMy Calendar { get; set; }
 
         public int CompareTo(Schedule other)
         {
