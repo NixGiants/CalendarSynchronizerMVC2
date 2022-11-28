@@ -50,7 +50,7 @@ namespace BLL.Services
             return;
         }
 
-        public async Task<List<Schedule>> GetCalendarSchedules(string calendarId)
+        public async Task<List<Schedule>> GetCalendarSchedules(string calendarId, string? searchString)
         {
             if (String.IsNullOrEmpty(calendarId))
             {
@@ -66,6 +66,11 @@ namespace BLL.Services
             catch (Exception e)
             {
                 logger.LogError(e.Message);
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                schedules = schedules.Where(sc => sc.Subject.Contains(searchString)).ToList();
             }
 
             return schedules;
@@ -92,7 +97,7 @@ namespace BLL.Services
             {
                 await scheduleRepository.Update(id, schedule);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e.Message);
             }
