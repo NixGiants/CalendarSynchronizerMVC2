@@ -50,7 +50,7 @@ namespace BLL.Services
             return;
         }
 
-        public async Task<List<Schedule>> GetCalendarSchedules(string calendarId, string? searchString)
+        public async Task<List<Schedule>> GetCalendarSchedules(string calendarId, string? searchString, string sortOrder)
         {
             if (String.IsNullOrEmpty(calendarId))
             {
@@ -66,6 +66,22 @@ namespace BLL.Services
             catch (Exception e)
             {
                 logger.LogError(e.Message);
+            }
+
+            switch (sortOrder)
+            {
+                case "startTime_desc":
+                    schedules = schedules.OrderByDescending(sc => sc.StartTime).ToList();
+                    break;
+                case "endTime_desc":
+                    schedules = schedules.OrderByDescending(sc => sc.EndTime).ToList();
+                    break;
+                case "EndTime":
+                    schedules = schedules.OrderBy(sc => sc.EndTime).ToList();
+                    break;
+                default:
+                    schedules = schedules.OrderBy(sc=>sc.StartTime).ToList();
+                    break;
             }
 
             if (!String.IsNullOrEmpty(searchString))
