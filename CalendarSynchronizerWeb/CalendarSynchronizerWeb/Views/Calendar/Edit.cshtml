@@ -56,16 +56,7 @@
                 <div class="form-group row py-2 ">
                     <div class="col-8 offset-4 row">
                         <div class="col">
-                            @if (Model != null && !String.IsNullOrEmpty(Model.CalendarId))
-                            {
-                            //update
-                                <input type="submit" class="btn btn-info w-100" value="Update" />
-                            }
-                            else
-                            {
-                                //create
-                                <input type="submit" class="btn btn-primary w-100" value="Create" />
-                            }
+                            <input type="submit" class="btn btn-info w-100" value="Update" />
                         </div>
                         <div class="col">
                             <a asp-action="Index" class="btn btn-success w-100">Back</a>
