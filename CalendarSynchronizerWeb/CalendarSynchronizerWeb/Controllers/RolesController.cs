@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using BLL.Intrfaces;
+using Core.Models;
 using DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,55 +10,51 @@ namespace CalendarSynchronizerWeb.Controllers
     [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
-        private readonly ApplicationDbContext dbContext;
-        private readonly UserManager<AppUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
-        public RolesController(ApplicationDbContext dbContext, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly IRoleService roleService;
+        private readonly ILogger<RolesController> logger;
+        public RolesController(IRoleService roleService, ILogger<RolesController> logger)
         {
-            this.dbContext = dbContext;
-            this.userManager = userManager;
-            this.roleManager = roleManager;
+            this.roleService = roleService;
+            this.logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var roles = dbContext.Roles.ToList();
+            var roles = await roleService.GetAll();
             return View(roles);
         }
 
         [HttpGet]
-        public IActionResult Upsert(string id)
+        public async Task<IActionResult> Upsert(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            try
             {
+                var role = await roleService.GetById(id);
+                if (role == null)
+                {
+                    return View();
+                }
+                return View(role);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.Message);
                 return View();
             }
-            var user = dbContext.Roles.FirstOrDefault(u => u.Id == id);
-            return View(user);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert (IdentityRole role)
+        public async Task<IActionResult> Upsert(IdentityRole role)
         {
-            if(await roleManager.RoleExistsAsync(role.Name))
+            try
             {
-                return RedirectToAction("Index");
+                await roleService.Upsert(role);
+                return RedirectToAction(nameof(Index));
             }
-            if (string.IsNullOrEmpty(role.Id))
+            catch (Exception e)
             {
-                await roleManager.CreateAsync(new IdentityRole() { Name = role.Name });
-            }
-            else
-            {
-                var roleDb = dbContext.Roles.FirstOrDefault(u => u.Id == role.Id);
-                if(roleDb == null)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                roleDb.Name = role.Name;
-                roleDb.NormalizedName = role.Name.ToUpper();
-                var reault = await roleManager.UpdateAsync(roleDb);
+                logger.LogError(e.Message);
             }
 
             return RedirectToAction(nameof(Index));
@@ -65,20 +62,18 @@ namespace CalendarSynchronizerWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete (string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var roleDb = dbContext.Roles.FirstOrDefault(r => r.Id == id);
-            if(roleDb == null)
+            try
             {
-                return RedirectToAction(nameof(Index));
+                await roleService.Delete(id);
             }
-            var userRolesForThisRoel = dbContext.UserRoles.Where(u => u.RoleId == id).Count();
-            if(userRolesForThisRoel > 0)
+            catch (Exception e)
             {
-                return RedirectToAction(nameof(Index));
+                logger.LogError(e.Message);
             }
-            await roleManager.DeleteAsync(roleDb);
-            return RedirectToAction(nameof(Index));
+
+           return RedirectToAction(nameof(Index));
         }
     }
 }

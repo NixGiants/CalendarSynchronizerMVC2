@@ -1,0 +1,22 @@
+﻿@using CalendarSynchronizerWeb.ViewModels.Calendar
+@model CalendarViewModel
+
+<div>
+    <div class="m-5 p-5">
+        <p>CalendarId</p>
+        <p> @Model.CalendarId</p>
+    </div>
+    <div class="m-5 p-5">
+        <p>Calendar Summary</p>
+        <p> @Model.Summary</p>
+    </div>
+    <div class="m-5 p-5">
+        <p>Calendar Description</p>
+        <p> @Model.Description</p>
+    </div>
+    <div class="m-5 p-5">
+        <p>Calendar Time Zone</p>
+        <p> @Model.TimeZone</p>
+    </div>
+    <a asp-controller="Calendar" asp-action="Index">Back</a>
+</div>

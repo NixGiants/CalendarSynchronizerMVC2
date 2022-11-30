@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace CalendarSynchronizerWeb.ViewModels
+namespace Core.Models
 {
     public class UserClaimsViewModel
     {

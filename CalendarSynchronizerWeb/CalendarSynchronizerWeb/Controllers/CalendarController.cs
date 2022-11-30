@@ -47,6 +47,7 @@ namespace CalendarSynchronizerWeb.Controllers
             {
                 var currentUser = await userManager.GetUserAsync(User);
                 List<CalendarMy> calendarsList = new List<CalendarMy>();
+
                 if (await userManager.IsInRoleAsync(currentUser, "Admin"))
                 {
                     calendarsList = await calendarService.GetAll(sortOrder, searchString);
@@ -70,6 +71,8 @@ namespace CalendarSynchronizerWeb.Controllers
                 return View("Error");
             }
         }
+
+      
 
         // GET: CalendarController/Create
         [HttpGet]
@@ -104,6 +107,27 @@ namespace CalendarSynchronizerWeb.Controllers
 
                 }
             }
+            return View(viewModel);
+        }
+
+        //[HttpGet]
+        public async Task<IActionResult> Details(string calendarId)
+        {
+            var calendar = await calendarService.Get(calendarId);
+
+            if(calendar == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            CalendarViewModel viewModel = new CalendarViewModel
+            {
+                CalendarId = calendar!.CalendarId,
+                Summary = calendar.Summary,
+                Description = calendar.Description,
+                TimeZone = calendar.TimeZone
+            };
+
             return View(viewModel);
         }
 
