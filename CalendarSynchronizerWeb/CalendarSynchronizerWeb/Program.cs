@@ -32,6 +32,7 @@ builder.Services.AddAuthentication()
     {
         options.ClientId = "516669132332-ril060aftkfjnc8gq5mqurffc3t95n8q.apps.googleusercontent.com";
         options.ClientSecret = "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";
+        options.Scope.Append("https://www.googleapis.com/auth/calendar"); 
     });
 
 builder.Services.AddAuthorization(options =>
@@ -52,11 +53,14 @@ builder.Services.AddSession();
 
 builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddScoped<ICalendarService, CalendarServiceMy>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IGoogleCalendarService, GoogleCalendarService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddScoped<ISha256HelperService, Sha256HelperService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
