@@ -1,0 +1,35 @@
+﻿@using CalendarSynchronizerWeb.ViewModels.Schedule
+@model ScheduleViewModel
+
+
+<h1>Event Details: </h1>
+<div class="border border-primary border-4 p-3">
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Event Id</p>
+        <p> @Model.Id</p>
+    </div>
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Event Description</p>
+        <p> @Model.Description</p>
+    </div>
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Time start</p>
+        <p> @Model.StartTime</p>
+
+    </div>
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Zone Start</p>
+        <p> @Model.StartTimeZone</p>
+    </div>
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Time start</p>
+        <p> @Model.EndTime</p>
+
+    </div>
+    <div class="m-3 p-1 border-bottom border-secondary border-2">
+        <p>Zone Start</p>
+        <p> @Model.EndTimeZone</p>
+    </div>
+
+    <a asp-controller="Schedule" asp-action="Index" class="btn btn-danger">Back</a>
+</div>

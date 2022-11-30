@@ -148,7 +148,7 @@ namespace CalendarSynchronizerWeb.Controllers
             if (result.Succeeded)
             {
                 await signInManager.UpdateExternalAuthenticationTokensAsync(info);
-                return LocalRedirect(returnUrl);
+                return RedirectToAction("Index","Home");
             }
             else
             {
@@ -177,17 +177,20 @@ namespace CalendarSynchronizerWeb.Controllers
                 {
                     return View("Error");
                 }
+
+                var role = await roleManager.FindByNameAsync("User");
+
                 var user = new AppUser
                 {
                     UserName = model.Name,
                     Email = model.Email,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
                 };
 
                 var result = await userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    //await userManager.AddToRoleAsync(user, "User");
+                    await userManager.AddToRoleAsync(user, "User");
                     result = await userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {

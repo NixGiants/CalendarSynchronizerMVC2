@@ -2,6 +2,7 @@
 using CalendarSynchronizerWeb.Models;
 using CalendarSynchronizerWeb.ViewModels.Schedule;
 using Core.Models;
+using Google.Apis.Calendar.v3.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,12 +64,6 @@ namespace CalendarSynchronizerWeb.Controllers
             }
         }
 
-        // GET: ScheduleController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: ScheduleController/Create
         public ActionResult Create()
         {
@@ -103,6 +98,19 @@ namespace CalendarSynchronizerWeb.Controllers
                 }
             }
 
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Details(Guid scheduleId)
+        {
+            var schedule = await scheduleService.GetSchedule(scheduleId);
+
+            if (schedule == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ScheduleViewModel viewModel = transfromModelToViewModel(schedule);
             return View(viewModel);
 
         }
