@@ -116,7 +116,7 @@ namespace BLL.Services
             return calendars;
         }
 
-        public async Task<List<CalendarMy>> GetByUserId(string userId, string? searchString = null)
+        public async Task<List<CalendarMy>> GetByUserId(string userId, string? searchString, string sortOrder)
         {
             if (string.IsNullOrEmpty(userId))
             {
@@ -134,10 +134,33 @@ namespace BLL.Services
                 logger.LogError(e.Message);
             }
 
+            switch (sortOrder)
+            {
+                case "summary_desc":
+                    calendars = calendars.OrderByDescending(s => s.Summary).ToList();
+                    break;
+                case "description_desc":
+                    calendars = calendars.OrderByDescending(c => c.Description).ToList();
+                    break;
+                case "Description":
+                    calendars = calendars.OrderBy(c => c.Description).ToList();
+                    break;
+                case "CalendarId_desc":
+                    calendars = calendars.OrderByDescending(c => c.CalendarId).ToList();
+                    break;
+                case "CalendarId":
+                    calendars = calendars.OrderBy(c => c.CalendarId).ToList();
+                    break;
+                default:
+                    calendars = calendars.OrderBy(c => c.Summary).ToList();
+                    break;
+            }
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 calendars = calendars.Where(c => c.Description.Contains(searchString)).ToList();
             }
+
 
             return calendars;
         }
