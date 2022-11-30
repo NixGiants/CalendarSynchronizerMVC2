@@ -1,6 +1,6 @@
 ﻿@using Core.Models
 
-@model IEnumerable<Schedule>
+@model CalendarPaginatedList<Schedule>
 
 <br />
 <div class="row">
@@ -18,8 +18,9 @@
 </div>
 <form asp-controller="Schedule" asp-action="Index" method="get">
     <p>
-        Description: <input type="text" name="searchString" />
-        <input class="btn btn-secondary" type="submit" value="Search" />
+        Subject: <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+        <input class="btn btn-secondary" type="submit" value="Search" /> |
+        <a asp-action="Index">Back to Full List</a>
     </p>
 </form>
 <div class="p-4 border rounded">
@@ -34,9 +35,10 @@
                     Subject
                 </th>
                 <th>
-                    Start Time
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["StartTimeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Start Time</a>
                 </th>
                 <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["EndTimeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">End Time</a>
                     End Time
                 </th>
                 <th>Actions</th>
@@ -74,4 +76,23 @@
             }
         </table>
     }
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
 </div>
