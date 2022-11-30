@@ -1,4 +1,5 @@
 ﻿using BLL.Intrfaces;
+using CalendarSynchronizerWeb.Models;
 using CalendarSynchronizerWeb.ViewModels.Calendar;
 using Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -23,43 +24,45 @@ namespace CalendarSynchronizerWeb.Controllers
 
         // GET: CalendarController
         [HttpGet]
-        public async Task<IActionResult> Index( string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["SummarySortParam"] = String.IsNullOrEmpty(sortOrder) ? "summary_desc" : "";
-            ViewData["DescriptionSortParam"] = sortOrder == "Description"? "description_desc":"Description";
+            ViewData["DescriptionSortParam"] = sortOrder == "Description" ? "description_desc" : "Description";
             ViewData["CalendarIdSortParam"] = sortOrder == "CalendarId" ? "calendarId_desc" : "CalendarId";
-           
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
             try
             {
-                var calendars = await calendarService.GetAll(sortOrder, searchString);
+                var currentUser = await userManager.GetUserAsync(User);
+                List<CalendarMy> calendarsList = new List<CalendarMy>();
+                if (await userManager.IsInRoleAsync(currentUser, "Admin"))
+                {
+                    calendarsList = await calendarService.GetAll(sortOrder, searchString);
+                }
+                else
+                {
+                    calendarsList = await calendarService.GetByUserId(userManager.GetUserId(User), searchString, sortOrder);
+                }
 
-                if (calendars == null)
+                if (calendarsList == null)
                 {
                     return View("Error");
                 }
 
-                return View(calendars);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e.Message);
-                return View("Error");
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SingleUserIndex(string searchString)
-        {
-            try
-            {
-                var userCalendars = await calendarService.GetByUserId(userManager.GetUserId(User), searchString);
-
-                if (userCalendars == null)
-                {
-                    return View("Error");
-                }
-
-                return View(userCalendars);
+                int pageSize = 3;
+                return View(CalendarPaginatedList<CalendarMy>.CreateAsync(calendarsList, pageNumber ?? 1, pageSize));
             }
             catch (Exception e)
             {
@@ -92,7 +95,7 @@ namespace CalendarSynchronizerWeb.Controllers
                     };
 
                     await calendarService.Create(calendar);
-                    return RedirectToAction(nameof(SingleUserIndex));
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception e)
                 {
