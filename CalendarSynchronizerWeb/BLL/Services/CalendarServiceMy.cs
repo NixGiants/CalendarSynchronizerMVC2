@@ -37,7 +37,7 @@ namespace BLL.Services
 
         public async Task Delete(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (String.IsNullOrEmpty(id))
             {
                 throw new ArgumentException("Bad Id was given");
             }

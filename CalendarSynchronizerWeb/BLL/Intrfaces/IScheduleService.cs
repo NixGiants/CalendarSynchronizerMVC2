@@ -12,7 +12,6 @@ namespace BLL.Intrfaces
         public Task Create(Schedule schedule);
         public Task<Schedule?> GetSchedule(Guid id);
         public Task<List<Schedule>> GetCalendarSchedules(string calendarId, string? searchString ,string sortOrder);
-
         public Task Delete(Guid id);
 
         public Task Update(Guid id, Schedule schedule);
