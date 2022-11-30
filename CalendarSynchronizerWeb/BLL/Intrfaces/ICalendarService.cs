@@ -12,7 +12,7 @@ namespace BLL.Intrfaces
         public Task Create(CalendarMy calendar);
         public Task<List<CalendarMy>> GetAll(string sortOrder, string? searchString);
 
-        public Task<List<CalendarMy>> GetByUserId(string userId, string? searchString);
+        public Task<List<CalendarMy>> GetByUserId(string userId, string? searchString, string sortOrder);
 
         public Task<CalendarMy?> Get(string calendarId);
 
