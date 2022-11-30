@@ -1,19 +1,37 @@
 ﻿@using Core.Models
-@model IEnumerable<CalendarMy>
+@using Microsoft.AspNetCore.Identity
+
+@model CalendarPaginatedList<CalendarMy>
+
+@inject UserManager<AppUser> userManager
+
 
 <br />
 <div class="row">
     <div class="col-6">
-        <h2 class="text-primary">All Calendars List </h2>
+        @{
+            var currentUser = await userManager.GetUserAsync(User);
+
+            @if (await userManager.IsInRoleAsync(currentUser, "Admin"))
+            {
+                <h2 class="text-primary">All Calendars List </h2>
+            }
+            else
+            {
+                <h2 class="text-primary">@currentUser.UserName – Your Calendars: </h2>
+            }
+        }
+
     </div>
     <div class="col-6 text-right">
         <a asp-action="Create" asp-controller="Calendar" class="btn btn-primary">Create New Calendar</a>
     </div>
 </div>
-<form asp-controller="Calendar" asp-action="SingleUserIndex" method="get">
+<form asp-controller="Calendar" asp-action="Index" method="get">
     <p>
-        Description: <input type="text" name="searchString" />
-        <input class="btn btn-secondary" type="submit" value="Search" />
+        Description: <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+        <input class="btn btn-secondary" type="submit" value="Search" /> |
+        <a asp-action="Index">Back to Full List</a>
     </p>
 </form>
 <div class="p-4 border rounded">
@@ -22,13 +40,13 @@
         <table class="table table-striped border">
             <tr class="table-secondary">
                 <th>
-                     <a asp-action="Index" asp-route-sortOrder="@ViewData["CalendarIdSortParam"]">@Html.DisplayNameFor(model=>model.CalendarId) CalendarId</a>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["CalendarIdSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> CalendarId</a>
                 </th>
                 <th>
-                   <a asp-action="Index" asp-route-sortOrder="@ViewData["SummarySortParam"]">@Html.DisplayNameFor(model=>model.Summary)</a>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["SummarySortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Summary</a>
                 </th>
                 <th>
-                   <a asp-action="Index" asp-route-sortOrder="@ViewData["DescriptionSortParam"]">@Html.DisplayNameFor(model=>model.Description)</a>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["DescriptionSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Descrtiprion</a>
                 </th>
                 <th>
                     Time Zone
@@ -56,7 +74,7 @@
                                 <a asp-action="Edit" asp-route-calendarId="@item.CalendarId" class="btn btn-info text-white">
                                     Edit
                                 </a>
-                               
+
                                 <button type="submit" onclick="return confirm('Are you sure you want to delete this?')"
                                 class="btn btn-danger">
                                     Delete
@@ -68,4 +86,23 @@
             }
         </table>
     }
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
 </div>
