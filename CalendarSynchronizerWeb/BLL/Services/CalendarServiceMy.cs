@@ -86,33 +86,7 @@ namespace BLL.Services
                 logger.LogError(e.Message);
             }
 
-            switch (sortOrder)
-            {
-                case "summary_desc":
-                    calendars = calendars.OrderByDescending(s => s.Summary).ToList();
-                    break;
-                case "description_desc":
-                    calendars = calendars.OrderByDescending(c => c.Description).ToList();
-                    break;
-                case "Description":
-                    calendars = calendars.OrderBy(c => c.Description).ToList();
-                    break;
-                case "CalendarId_desc":
-                    calendars = calendars.OrderByDescending(c => c.CalendarId).ToList();
-                    break;
-                case "CalendarId":
-                    calendars = calendars.OrderBy(c => c.CalendarId).ToList();
-                    break;
-                default:
-                    calendars = calendars.OrderBy(c => c.Summary).ToList();
-                    break;
-            }
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                calendars = calendars.Where(c => c.Description.Contains(searchString)).ToList();
-            }
-
+            calendars = sortFilterList(calendars, searchString, sortOrder);
             return calendars;
         }
 
@@ -134,6 +108,30 @@ namespace BLL.Services
                 logger.LogError(e.Message);
             }
 
+            calendars = sortFilterList(calendars, searchString, sortOrder);
+            return calendars;
+        }
+
+        public async Task Update(CalendarMy calendar, string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException("Bad Id was given");
+            }
+            try
+            {
+                await calendarRepository.Update(calendar, id);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.Message);
+            }
+
+            return;
+        }
+
+        private List<CalendarMy> sortFilterList(List<CalendarMy> calendars, string? searchString, string sortOrder)
+        {
             switch (sortOrder)
             {
                 case "summary_desc":
@@ -161,26 +159,7 @@ namespace BLL.Services
                 calendars = calendars.Where(c => c.Description.Contains(searchString)).ToList();
             }
 
-
             return calendars;
-        }
-
-        public async Task Update(CalendarMy calendar, string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException("Bad Id was given");
-            }
-            try
-            {
-                await calendarRepository.Update(calendar, id);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e.Message);
-            }
-
-            return;
         }
     }
 }
